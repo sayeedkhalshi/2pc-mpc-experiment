@@ -15,3 +15,6 @@ pub mod eddsa;
 
 // optional shared utilities
 pub mod utils;
+
+#[path ="secp256k1/mod.rs"]
+pub mod secp256k1;

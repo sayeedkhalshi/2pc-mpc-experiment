@@ -1,7 +1,8 @@
 mod group;
 mod ring;
 mod class_group;
-
+use group::secp256k1::params::Secp256k1;
+use group::secp256k1::point::{AffinePoint, JacobianPoint};
 fn main() {
     // --- GCD ---
     let g = group::rsa::gcd::gcd(48, 18);
@@ -75,11 +76,20 @@ fn main() {
     use group::dsa::dsa::demo as dsa_demo;
     dsa_demo();
 
-    // --- ECDSA Demo ---
-    use group::ecdsa::ecdsa::demo as ecdsa_demo;
-    ecdsa_demo();
+        let secp = Secp256k1::new();
+    let g_aff = AffinePoint { x: secp.gx.clone(), y: secp.gy.clone(), infinity: false };
+    let g_jac = JacobianPoint::from_affine(&g_aff);
+    let g_back = g_jac.to_affine(&secp.p);
+    println!("Back to affine: {:?}", g_back);
 
-    // --- EdDSA Demo ---
-    use group::eddsa::eddsa::demo as eddsa_demo;
-    eddsa_demo();
+    // // --- ECDSA Demo ---
+    // use group::ecdsa::ecdsa::demo as ecdsa_demo;
+    // ecdsa_demo();
+
+    // // --- EdDSA Demo ---
+    // use group::eddsa::eddsa::demo as eddsa_demo;
+    // eddsa_demo();
+
+
+
 }

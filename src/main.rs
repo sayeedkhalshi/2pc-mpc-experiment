@@ -72,6 +72,14 @@ fn main() {
     println!("ECC keypair: private={}, public={:?}", keypair.private, keypair.public);
 
     // --- DSA Demo ---
-    use group::dsa::dsa::demo;
-    demo();
+    use group::dsa::dsa::demo as dsa_demo;
+    dsa_demo();
+
+    // --- ECDSA Demo ---
+    use group::ecdsa::ecdsa::demo as ecdsa_demo;
+    ecdsa_demo();
+
+    // --- EdDSA Demo ---
+    use group::eddsa::eddsa::demo as eddsa_demo;
+    eddsa_demo();
 }

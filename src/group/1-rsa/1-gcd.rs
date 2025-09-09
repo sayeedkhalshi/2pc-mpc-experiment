@@ -13,7 +13,9 @@ pub fn divmod(a: i64, b: i64) -> (i64, i64){
 }
 
 
-/// Euclid's GCD - Greatest Common Divider
+///! Euclid's GCD - Greatest Common Divider
+/// 500BC, Back then there was no steady concept of modular arithmetic. 
+/// What Greek's would do is using geometry and ratio concept to 
 
 pub fn gcd(mut a: i64, mut b: i64) -> i64 {
     while b != 0 {
@@ -29,7 +31,7 @@ pub fn gcd(mut a: i64, mut b: i64) -> i64 {
 /// Returns (g, x, y) such that ax + by = g = gcd (a,b)
 /// 
 pub fn extended_gcd(a: i64, b: i64) -> (i64, i64, i64){
-    if(b == 0){
+    if b == 0 {
         return (a,1,0);
     }
 

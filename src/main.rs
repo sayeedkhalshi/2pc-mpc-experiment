@@ -26,7 +26,7 @@ fn main() {
     let euler_result = group::rsa::euler::euler_theorem(a, n);
     println!("Euler theorem: {}^φ({}) ≡ {} (mod {})", a, n, euler_result, n);
 
-    // --- Lagrange’s Little Theorem (prime modulus check) ---
+    // --- Lagrange’s Little Theorem ---
     let lag = group::rsa::lagrange::lagrange_theorem(2, 7);
     println!("Lagrange(2,7): {}", lag);
 
@@ -43,11 +43,35 @@ fn main() {
         println!("  encrypted = {}", cipher);
         println!("  decrypted = {}", decrypted);
 
-        // Optional: CRT-accelerated decryption
         if let Some(crt_msg) = group::rsa::rsa::crt_decrypt(cipher, kp.p, kp.q, kp.d) {
             println!("  CRT decrypted = {}", crt_msg);
         }
     } else {
         println!("RSA keygen failed!");
     }
+
+    // --- ECC Demo ---
+    use group::ecc::field::mod_pow;
+    use group::ecc::curve::{Curve, is_on_curve};
+    use group::ecc::point::{Point, point_add, point_double};
+    use group::ecc::scalar::scalar_mul;
+    use group::ecc::ecc::keygen;
+
+    let curve = Curve { a: 2, b: 3, p: 97 };
+    let G = Point { x: 3, y: 6, infinity: false };
+    println!("G is on curve? {}", is_on_curve(G.x, G.y, &curve));
+
+    let R = point_add(G, G, &curve);
+    println!("2G = {:?}", R);
+
+    let S = scalar_mul(20, G, &curve);
+    println!("20G = {:?}", S);
+
+    let d = 15;
+    let keypair = keygen(d, G, &curve);
+    println!("ECC keypair: private={}, public={:?}", keypair.private, keypair.public);
+
+    // --- DSA Demo ---
+    use group::dsa::dsa::demo;
+    demo();
 }

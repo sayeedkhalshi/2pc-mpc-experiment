@@ -1,9 +1,16 @@
 mod group;
-mod ring;
 mod class_group;
+mod standard;
 use group::secp256k1::params::Secp256k1;
 use group::secp256k1::point::{AffinePoint, JacobianPoint};
 fn main() {
+
+    //! implement the standard folder here
+
+
+
+
+    //! Test practice part (class_group, group folder ) below
     // --- GCD ---
     let g = group::rsa::gcd::gcd(48, 18);
     println!("GCD(48, 18) = {}", g);
@@ -90,6 +97,44 @@ fn main() {
     // use group::eddsa::eddsa::demo as eddsa_demo;
     // eddsa_demo();
 
+    // 1. Generate a keypair (2048 bits is a good default)
+    let kp = group::secp256k1::pailliar::Keypair::generate(2048);
+    let pk = kp.pk;
+    let sk = kp.sk;
 
+    // 2. Encrypt a plaintext message
+    let m =num_bigint::BigInt::from(123456789u64);
+    let c = pk.encrypt(m.clone()).unwrap();
+    println!("Ciphertext: {}", &c.0);
+
+    // 3. Decrypt back
+    let d = sk.decrypt(&pk, &c).unwrap();
+    println!("Decrypted: {}", d);
+    assert_eq!(m, d);
+
+    // 4. Homomorphic addition
+    let m1 = num_bigint::BigInt::from(42u32);
+    let m2 = num_bigint::BigInt::from(99u32);
+
+    let c1 = pk.encrypt(m1.clone()).unwrap();
+    let c2 = pk.encrypt(m2.clone()).unwrap();
+    let c_sum = pk.add(&c1, &c2);
+
+    let d_sum = sk.decrypt(&pk, &c_sum).unwrap();
+    println!("Homomorphic sum decrypts to: {}", d_sum);
+    assert_eq!(d_sum, m1.clone() + m2.clone());
+
+    // 5. Homomorphic scalar multiplication
+    let k = num_bigint::BigInt::from(5);
+    let c_scaled = pk.mul_scalar(&c1, k.clone());
+    let d_scaled = sk.decrypt(&pk, &c_scaled).unwrap();
+    println!("Homomorphic scalar multiply result: {}", d_scaled);
+    assert_eq!(d_scaled, m1.clone() * k);
+
+    // 6. Rerandomization (ciphertext changes, plaintext same)
+    let c_rr = pk.rerandomize(&c).unwrap();
+    let d_rr = sk.decrypt(&pk, &c_rr).unwrap();
+    println!("Rerandomized decrypts to: {}", d_rr);
+    assert_eq!(d_rr, m);
 
 }
